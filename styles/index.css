@@ -62,7 +62,12 @@ body {
 
 #main-section #account-info {
     flex: 1;
+    padding: 2rem 1rem;
     text-align: center;
+}
+
+#main-section #account-info #account .user-profile {
+    margin: 0 auto;
 }
 
 #main-section #feed {
@@ -73,7 +78,32 @@ body {
     padding: 2rem 1rem;
 }
 
-#main-section .feed-section .section-title {
+#main-section #feed #network {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+#main-section #feed #network-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+}
+
+#main-section #feed #network-pagination .page-number {
+    padding: 0.25rem 0.5rem;
+    background-color: var(--primary-color);
+    border-radius: 0.125rem;
+    font-weight: bold;
+}
+
+#footer {
+    text-align: center;
+}
+
+.section-title {
     color: var(--primary-color);
     font-size: 2rem;
     font-weight: bold;
@@ -81,20 +111,10 @@ body {
     line-height: 2rem;
 }
 
-#main-section .feed-section .section-subtitle {
+.section-subtitle {
     font-size: 1.25rem;
     font-weight: 200;
     margin-bottom: 1rem;
-}
-
-#main-section #feed #network {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-#footer {
-    text-align: center;
 }
 
 .user-profile {
@@ -102,6 +122,43 @@ body {
     max-width: 280px;
     padding: 1rem;
     border-radius: 0.5rem;
+    position: relative;
+}
+
+.user-profile .subscription-plan {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    text-align: center;
+    padding: 0.5rem;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.user-profile .subscription-plan::after {
+    content: '';
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    margin-left: 0.5rem;
+}
+
+.user-profile .subscription-plan.active::after {
+    background-color: green;
+}
+
+.user-profile .subscription-plan.blocked::after {
+    background-color: red;
+}
+
+.user-profile .subscription-plan.pending::after {
+    background-color: yellow;
+}
+
+.user-profile .subscription-plan.idle::after {
+    background-color: grey;
 }
 
 .user-profile .avatar {
@@ -118,6 +175,13 @@ body {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--secondary-color);
+    line-height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.user-profile .personal-data .full-name span {
+    color: var(--primary-color);
+    font-size: 1rem;
 }
 
 .user-profile .personal-data .job-title {

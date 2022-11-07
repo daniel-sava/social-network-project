@@ -25,12 +25,20 @@
             </div>
         </nav>
         <section id="main-section">
-            <aside id="account-info">Account</aside>
+            <aside id="account-info">
+                <h1 class="section-title">Account</h1>
+                <h2 class="section-subtitle">Your personal data</h2>
+                <div id="account"></div>
+            </aside>
             <section id="feed">
                 <section class="feed-section">
                     <h1 class="section-title">Network</h1>
                     <h2 class="section-subtitle">People you might now</h2>
-                    <div id="network"></div>
+                    <div class="network-wrapper">
+                        <p id="results-number"></p>
+                        <div id="network"></div>
+                        <div id="network-pagination"></div>
+                    </div>
                 </section>
             </section>
         </section>
