@@ -1,14 +1,28 @@
+/**
+ *  Get a list of users
+ *  -> first user is your own account, remove from entire list
+ *  -> generate own account data
+ *  -> generate pagination data
+ *  -> create frequency lists of skills and positions
+ *  -> generate network feed + establish subscription status for each user (active, blocked, idle, pending) + set badge for most popular skill
+ *
+ * On page change
+ *  -> if new page is the same with current page DO NOTHING!
+ *  -> clear current feed
+ *  -> set new page as active
+ *  -> generate network feed + establish subscription status for each user (active, blocked, idle, pending) + set badge for most popular skill
+ */
+
 let networkUsers = [];
 let skills = {};
 let positions = {};
-
-// active, blocked, idle, pending
-
 let currentUser = {};
 
-const maxDisplayedUsers = 7;
+let mostPopularSkill = '';
+
+const maxDisplayedUsers = 8;
 let totalPages = 0;
-let currentPage = 2;
+let currentPage = 1;
 
 const networkFeedElement = document.getElementById('network');
 const networkFeedResultsNumberElement =
@@ -19,13 +33,12 @@ const accountElement = document.getElementById('account');
 
 function getNetworkUsers() {
     let getNetworkUsersRequest = fetch(
-        'https://random-data-api.com/api/v2/users?size=43'
+        'https://random-data-api.com/api/v2/users?size=97'
     );
     getNetworkUsersRequest
         .then((response) => response.json())
         .then((data) => {
             networkUsers = data;
-            let currentDisplayedUsers = 0;
 
             // Preia primul utilizator, ca fiind utilizatorul curent
             currentUser = new NetworkUser(networkUsers[0]);
@@ -39,14 +52,13 @@ function getNetworkUsers() {
             for (let networkUser of networkUsers) {
                 const user = new NetworkUser(networkUser);
 
-                if (currentDisplayedUsers !== maxDisplayedUsers) {
-                    createUserProfileElement(user, networkFeedElement);
-                    currentDisplayedUsers++;
-                }
-
                 addSkillToList(user.employment.mainSkill);
                 addPositionToList(user.employment.position);
             }
+
+            findMostPopularSkill();
+
+            generateNetworkFeed();
         })
         .catch((error) => {
             console.log(error);
@@ -62,11 +74,39 @@ function addSkillToList(skill) {
     }
 }
 
+function findMostPopularSkill() {
+    let mostPopularSkillCount = 0;
+
+    for (let skill in skills) {
+        if (skills[skill] > mostPopularSkillCount) {
+            mostPopularSkillCount = skills[skill];
+            mostPopularSkill = skill;
+        }
+    }
+}
+
 function addPositionToList(position) {
     if (positions[position]) {
         positions[position] += 1;
     } else {
         positions[position] = 1;
+    }
+}
+
+function clearNetworkFeed() {
+    networkFeedElement.innerHTML = '';
+}
+
+function generateNetworkFeed() {
+    const startingIndex = (currentPage - 1) * maxDisplayedUsers;
+    const endingIndex =
+        currentPage === totalPages
+            ? networkUsers.length - 1
+            : currentPage * maxDisplayedUsers - 1;
+
+    for (let index = startingIndex; index <= endingIndex; index++) {
+        const user = new NetworkUser(networkUsers[index]);
+        createUserProfileElement(user, networkFeedElement);
     }
 }
 
@@ -101,7 +141,9 @@ function createUserProfileElement(user, parentElement) {
     const userProfilePersonalDataJobTitle = document.createElement('p');
     userProfilePersonalDataJobTitle.classList.add('job-title');
 
-    const userJobTitle = document.createTextNode(user.employment.position);
+    const userJobTitle = document.createTextNode(
+        user.employment.mainSkill + ' @ ' + user.employment.position
+    );
     userProfilePersonalDataJobTitle.appendChild(userJobTitle);
 
     userProfilePersonalDataElement.appendChild(userProfilePersonalDataName);
@@ -142,6 +184,15 @@ function createUserProfileElement(user, parentElement) {
         userProfilePersonalDataElement.appendChild(userBioElement);
     }
 
+    if (user.employment.mainSkill === mostPopularSkill) {
+        const popularSkillElement = document.createElement('div');
+        popularSkillElement.classList.add('popular-skill');
+        const popularSkillText = document.createTextNode('Popular Skill');
+        popularSkillElement.appendChild(popularSkillText);
+
+        userProfileElement.appendChild(popularSkillElement);
+    }
+
     parentElement.appendChild(userProfileElement);
 }
 
@@ -149,9 +200,38 @@ function getPagesConfiguration() {
     for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
         const pageNumberElement = document.createElement('div');
         pageNumberElement.classList.add('page-number');
+        // Solutia 2
+        pageNumberElement.setAttribute('data-page', pageNumber);
+
+        if (pageNumber === currentPage) {
+            pageNumberElement.classList.add('active');
+        }
 
         const pageNumberText = document.createTextNode(pageNumber);
         pageNumberElement.appendChild(pageNumberText);
+
+        pageNumberElement.addEventListener('click', (event) => {
+            // Solutia 2
+            const page = parseInt(event.target.getAttribute('data-page'));
+
+            // Solutia 1
+            // const page = parseInt(event.target.innerText);
+            if (page === currentPage) {
+                return;
+            }
+
+            currentPage = page;
+            setResultsNumberElement();
+
+            const currentActivePageElement = document.querySelector(
+                '.page-number.active'
+            );
+            currentActivePageElement.classList.remove('active');
+            clearNetworkFeed();
+
+            event.target.classList.add('active');
+            generateNetworkFeed();
+        });
 
         networkFeedPaginationElement.appendChild(pageNumberElement);
     }

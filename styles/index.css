@@ -84,6 +84,10 @@ body {
     flex-wrap: wrap;
 }
 
+#main-section #feed #results-number {
+    margin-bottom: 1rem;
+}
+
 #main-section #feed #network-pagination {
     display: flex;
     justify-content: center;
@@ -97,6 +101,12 @@ body {
     background-color: var(--primary-color);
     border-radius: 0.125rem;
     font-weight: bold;
+    cursor: pointer;
+}
+
+#main-section #feed #network-pagination .page-number.active {
+    background-color: var(--secondary-color);
+    color: var(--darker-color);
 }
 
 #footer {
@@ -187,4 +197,13 @@ body {
 .user-profile .personal-data .job-title {
     font-size: 1rem;
     margin-bottom: 1rem;
+}
+
+.user-profile .popular-skill {
+    background-color: var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    text-align: center;
+    width: fit-content;
+    margin: 0.5rem auto 0;
 }
